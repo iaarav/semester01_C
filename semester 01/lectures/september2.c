@@ -14,6 +14,5 @@ int main() {
     }else{
         printf("\nFAIL");
     }
-    // me apna code idhr likhta rahunga, and when im done, i can just go to github and upload it
     return 0;
 }
