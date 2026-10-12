@@ -2,11 +2,7 @@
 #include <stdlib.h>
 
 int main() {
-  printf("hello world\n");
-  int* h = malloc(4);
-  scanf("\n%d", h);
-  printf("%d",*h);
+    int arr[] = {91,18920,18,182,182};
 
-  free(h);
-  return 0;
+    printf("%d",arr[3-2]);
 }
