@@ -1,0 +1,52 @@
+name: Generate code document
+
+on:
+  push:
+    paths-ignore:
+      - code-export.docx
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: code-to-docx-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  generate:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out assignments repository
+        uses: actions/checkout@v6
+
+      - name: Check out Code to Docx
+        uses: actions/checkout@v6
+        with:
+          repository: iaarav/code-to-docx
+          ref: main
+          path: .tools/code-to-docx
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+
+      - name: Install document generator dependencies
+        run: python -m pip install -r .tools/code-to-docx/requirements.txt
+
+      - name: Generate Word document
+        run: python .tools/code-to-docx/generate_docx.py --root "semester 01" --output code-export.docx
+
+      - name: Save updated document to GitHub
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add code-export.docx
+          if git diff --cached --quiet; then
+            echo "The generated document is already up to date."
+          else
+            git commit -m "Update generated code document [skip ci]"
+            git push
+          fi
